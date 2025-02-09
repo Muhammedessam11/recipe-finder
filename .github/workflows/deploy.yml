@@ -37,9 +37,15 @@ jobs:
         with:
           version: latest
 
+      - name: Save KUBECONFIG to file
+        run: |
+          echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
       - name: Deploy to Kubernetes
         run: kubectl apply -f k8s/
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: $HOME/.kube/config
 
 
