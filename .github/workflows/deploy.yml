@@ -7,7 +7,7 @@ on:
 
 jobs:
   build-and-deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted  # Use the self-hosted runner
 
     steps:
       - name: Checkout Repository
@@ -32,21 +32,14 @@ jobs:
           docker build -t mohamedessam1911/recipe-finder-frontend:latest ./frontend
           docker push mohamedessam1911/recipe-finder-frontend:latest
 
-      - name: Set up kubectl
+      - name: Set up Kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: latest
 
-      - name: Set up kubeconfig for Minikube
-        run: |
-          mkdir -p ~/.kube
-          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
-          echo "${{ secrets.KUBE_CA_CERT }}" > ~/.kube/ca.crt
-          echo "${{ secrets.KUBE_CLIENT_CERT }}" > ~/.kube/client.crt
-          echo "${{ secrets.KUBE_CLIENT_KEY }}" > ~/.kube/client.key
-
       - name: Deploy to Kubernetes
         run: kubectl apply -f k8s/
         env:
-          KUBECONFIG: ~/.kube/config
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+
 
