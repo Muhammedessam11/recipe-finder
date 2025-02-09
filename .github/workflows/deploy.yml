@@ -37,12 +37,15 @@ jobs:
         with:
           version: latest
 
-      - name: Debug Kubeconfig
-        run: cat ${{ secrets.KUBECONFIG }}
+      - name: Create Kubeconfig File
+        run: echo "${{ secrets.KUBECONFIG }}" > kubeconfig.yaml
 
+      - name: Debug Kubeconfig
+        run: cat kubeconfig.yaml
+      
       - name: Deploy to Kubernetes
         run: kubectl apply -f k8s/
         env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+          KUBECONFIG: kubeconfig.yaml
 
 
