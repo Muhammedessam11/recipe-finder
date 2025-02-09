@@ -32,22 +32,21 @@ jobs:
           docker build -t mohamedessam1911/recipe-finder-frontend:latest ./frontend
           docker push mohamedessam1911/recipe-finder-frontend:latest
 
-      - name: Set up Kubectl
+      - name: Set up kubectl
         uses: azure/setup-kubectl@v3
         with:
           version: latest
 
-      - name: Create .kube directory
-        run: mkdir -p $HOME/.kube
-
-      - name: Save KUBECONFIG to file
-        run: echo "${{ secrets.KUBECONFIG }}" > $HOME/.kube/config
-        env:
-          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+      - name: Set up kubeconfig for Minikube
+        run: |
+          mkdir -p ~/.kube
+          echo "${{ secrets.KUBECONFIG }}" > ~/.kube/config
+          echo "${{ secrets.KUBE_CA_CERT }}" > ~/.kube/ca.crt
+          echo "${{ secrets.KUBE_CLIENT_CERT }}" > ~/.kube/client.crt
+          echo "${{ secrets.KUBE_CLIENT_KEY }}" > ~/.kube/client.key
 
       - name: Deploy to Kubernetes
         run: kubectl apply -f k8s/
         env:
-          KUBECONFIG: $HOME/.kube/config
-
+          KUBECONFIG: ~/.kube/config
 
